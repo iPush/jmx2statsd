@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="300">
+    <Properties>
+        <Property name="traceFile">logs/jmx-statsd-all</Property>
+        <Property name="infoFile">logs/jmx-statsd</Property>
+        <Property name="warnFile">logs/jmx-statsd-wf</Property>
+
+        <Property name="eventFile">logs/jmx-statsd-event</Property>
+        <Property name="queryFile">logs/jmx-statsd-query</Property>
+        <Property name="pattern">%-d{yyyy-MM-dd HH:mm:ss,SSS}[%p][%t][%F:%M(%L)] - %m%n</Property>
+    </Properties>
+
+    <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${pattern}"/>
+        </Console>
+
+        <RollingFile name="TraceLog" fileName="${traceFile}.log"
+                     filePattern="${traceFile}_%d{yyyy-MM-dd}_%i.log.gz">
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="500 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <RollingFile name="NoticeLog" fileName="${infoFile}.log"
+                     filePattern="${infoFile}_%d{yyyy-MM-dd}_%i.log.gz">
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="500 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <RollingFile name="WarnLog" fileName="${warnFile}.log"
+                     filePattern="${warnFile}_%d{yyyy-MM-dd}_%i.log.gz">
+            <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="500 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <RollingFile name="eventLog" fileName="${eventFile}.log"
+                     filePattern="${eventFile}_%d{yyyy-MM-dd}_%i.log.gz">
+            <StructuredDataFilter onMatch="ACCEPT" onMismatch="DENY" operator="or">
+                <KeyValuePair key="type" value="enableConfigureKey"/>
+                <KeyValuePair key="hostName" value="tc-oped-dev03.tc"/>
+            </StructuredDataFilter>
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="500 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <RollingFile name="queryLog" fileName="${queryFile}.log"
+                     filePattern="${queryFile}_%d{yyyy-MM-dd}_%i.log.gz">
+            <ThreadContextMapFilter onMatch="ACCEPT" onMismatch="DENY" operator="and">
+                <KeyValuePair key="hostName" value="tc-oped-dev01.tc"/>
+                <KeyValuePair key="system" value="puppet"/>
+            </ThreadContextMapFilter>
+            <PatternLayout
+                    pattern="%-d{yyyy-MM-dd HH:mm:ss,SSS}[%p][%t][%F:%M(%L)] [%X{hostName}] [%X{system}] - %m%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="500 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+    </appenders>
+
+    <loggers>
+        <logger name="log4j.logger.org.apache.commons" level="info"></logger>
+        <logger name="log4j.logger.com.mchange.v2" level="info"></logger>
+        <logger name="log4j.logger.org.apache.commons.httpclient" level="warn"></logger>
+
+        <logger name="EventLogger" level="info" additivity="false">
+            <appender-ref ref="eventLog"/>
+        </logger>
+
+        <root level="trace">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="WarnLog"/>
+            <appender-ref ref="TraceLog"/>
+            <appender-ref ref="NoticeLog"/>
+            <appender-ref ref="queryLog"/>
+        </root>
+    </loggers>
+</Configuration>

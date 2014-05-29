@@ -1,0 +1,154 @@
+#! /bin/sh --
+
+cd "`dirname $0`/.." || exit 1
+
+readonly WORKSPACE=`pwd`
+readonly SLEEP='sleep'
+readonly G_PROC_NAME='JmxToStatsD'
+
+readonly PIDFILE="$WORKSPACE/runtime/JmxToStatsD.pid"
+readonly STDOUT="$WORKSPACE/log/application.out"
+readonly MAIN=com.baidu.aqueducts.dashboard.JmxToStatsD
+readonly CLASSPATH="$WORKSPACE/conf:$WORKSPACE/lib/*"
+
+START_COMMAND="java -Xmx20480m -Xms2048m -Djute.maxbuffer=10240000 -cp $CLASSPATH $MAIN"
+
+start_check()
+{
+    ps aux  | fgrep "${G_PROC_NAME}"| fgrep -v 'fgrep' | fgrep -v "vi\|vim\|tail\|tailf\|less\|more" | fgrep 'java' >/dev/null 2>&1
+    ret=$?
+    if [ $ret -eq 0 ]; then
+      return 0
+    else
+      return 1
+    fi
+}
+
+stop_check()
+{
+    ps aux | fgrep "${G_PROC_NAME}"| fgrep -v 'fgrep' | fgrep -v "vi\|vim\|tail\|tailf\|less\|more" | fgrep 'java' >/dev/null 2>&1
+    ret=$?
+    if [ ${ret} -ne 0 ] ; then
+      return 0
+    else
+      return 1
+    fi
+}
+
+help()
+{
+    echo "${0} <start|stop|restart|shutdown|reload|status>"
+    exit 1
+}
+
+die()
+{
+    echo "[FAILED] ${1}"
+    exit 1
+}
+
+ok()
+{
+    echo "[OK] ${1}"
+}
+
+signal()
+{
+    ps aux | fgrep ${G_PROC_NAME} | fgrep -v "fgrep" | fgrep 'java' | awk '{print "kill -9 " $2}' | sh
+}
+
+start()
+{
+    start_check
+    if [ $? -eq 0 ]; then
+        ok "start"
+        return 0
+    fi
+
+    mkdir -p $WORKSPACE/{logs,runtime}
+
+    echo "starting JmxToStatsD ..."
+
+    nohup $START_COMMAND 1>/dev/null 2>&1 &
+    pid=$!
+    echo "$pid" >"$PIDFILE"
+
+    for i in 1 2 3 4 5 6 7 8 9 10; do
+        ${SLEEP} 1
+
+        start_check
+        if [ $? -eq 0 ]; then
+            ok "start"
+            return 0
+        fi
+    done
+
+    die "start"
+}
+
+stop()
+{
+    stop_check
+    if [ $? -eq 0 ]; then
+        ok "stop"
+        return 0
+    fi
+
+    for i in 1 2 3 4 5; do
+        signal
+        ${SLEEP} 1
+        stop_check
+        if [ $? -eq 0 ]; then
+            ok "stop"
+            return 0
+        fi
+    done
+    die "stop"
+}
+
+restart()
+{
+    stop
+    start
+    return 0
+}
+
+shutdown()
+{
+    stop
+    ok "Shutdown"
+    return 0
+}
+
+status()
+{
+    start_check
+    if [ $? -eq 0 ]; then
+        echo 'Running'
+        return 0
+    else
+        echo 'Not running'
+        return 1
+    fi
+}
+
+case "${1}" in
+start)
+    start
+    ;;
+stop)
+    stop
+    ;;
+restart)
+    restart
+    ;;
+shutdown)
+    shutdown
+    ;;
+status)
+    status
+    ;;
+*)
+    help
+    ;;
+esac
