@@ -28,9 +28,22 @@
         </dependency>
 
         <dependency>
-            <groupId>com.baidu.noah.naming</groupId>
-            <artifactId>naming-sdk-java</artifactId>
-            <version>1.0.0.0</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.3.1</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.0.13</version>
         </dependency>
 
     </dependencies>
