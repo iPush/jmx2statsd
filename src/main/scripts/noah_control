@@ -6,9 +6,9 @@ readonly WORKSPACE=`pwd`
 readonly SLEEP='sleep'
 readonly G_PROC_NAME='JmxToStatsD'
 
-readonly PIDFILE="$WORKSPACE/runtime/JmxToStatsD.pid"
+readonly PIDFILE="$WORKSPACE/runtime/JmxMonitor.pid"
 readonly STDOUT="$WORKSPACE/log/application.out"
-readonly MAIN=com.baidu.aqueducts.dashboard.JmxToStatsD
+readonly MAIN=JmxMonitor
 readonly CLASSPATH="$WORKSPACE/conf:$WORKSPACE/lib/*"
 
 START_COMMAND="java -Xmx20480m -Xms2048m -Djute.maxbuffer=10240000 -cp $CLASSPATH $MAIN"
