@@ -1,0 +1,13 @@
+global:
+    type: OPENFALCON
+    flush_period: 10
+
+services:
+    kafka:
+        host:
+            - 127.0.0.1
+        jmx_port: 9999
+        thread_num: 1
+        items:
+            gauges:
+                Message_in_rate:  'kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec'
