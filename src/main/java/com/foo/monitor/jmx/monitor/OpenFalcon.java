@@ -2,6 +2,8 @@ package com.foo.monitor.jmx.monitor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +38,11 @@ public class OpenFalcon extends AbstractMonitor{
 
     @Override
     public void monitor(Object data) {
-        String jsonData = gson.toJson((OpenFalconData)data);
+        List<OpenFalconData> list = new ArrayList<OpenFalconData>();
+        list.add((OpenFalconData)data);
+
+
+        String jsonData = gson.toJson(list);
         LOG.debug("OpenFalcon push data " + jsonData);
         try {
             HttpPost httpPost = new HttpPost(this.apiAddr);
