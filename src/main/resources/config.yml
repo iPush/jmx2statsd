@@ -1,33 +1,13 @@
 global:
-    statsd_host: yf-aqueducts-monitor00.yf01
-    statsd_port: 8125
-    flush_period: 3
+    type: OPENFALCON
+    flush_period: 10
 
 services:
     kafka:
-        bns: kafka.aqueducts.all
-        jmx_port: 8888
-        thread_num: 3
+        host:
+            - 127.0.0.1
+        jmx_port: 9999
+        thread_num: 1
         items:
-            timing:
-                Request_total_time.Fetch-Consumer: '"kafka.network":name="Fetch-Consumer-TotalTimeMs",type="RequestMetrics"'
-                Request_total_time.Fetch-Follower: '"kafka.network":name="Fetch-Follower-TotalTimeMs",type="RequestMetrics"'
-                Time_the_request_waiting_in_the_request_queue.Produce: '"kafka.network":name="Produce-QueueTimeMs",type="RequestMetrics"'
-                Time_the_request_waiting_in_the_request_queue.Fetch-Consumer: '"kafka.network":name="Fetch-Consumer-QueueTimeMs",type="RequestMetrics"'
-                Time_the_request_waiting_in_the_request_queue.Fetch-Follower: '"kafka.network":name="Fetch-Follower-QueueTimeMs",type="RequestMetrics"'
-                Time_the_request_being_processed_at_the_leader.Produce: '"kafka.network":name="Produce-LocalTimeMs",type="RequestMetrics"'
-                Time_the_request_being_processed_at_the_leader.Fetch-Consumer: '"kafka.network":name="Fetch-Consumer-LocalTimeMs",type="RequestMetrics"'
-                Time_the_request_being_processed_at_the_leader.Fetch-Follower: '"kafka.network":name="Fetch-Follower-LocalTimeMs",type="RequestMetrics"'
-                Time_to_send_the_response.Produce: '"kafka.network":name="Produce-ResponseSendTimeMs",type="RequestMetrics"'
-                Time_to_send_the_response.Fetch-Consumer: '"kafka.network":name="Fetch-Consumer-ResponseSendTimeMs",type="RequestMetrics"'
-                Time_to_send_the_response.Fetch-Follower: '"kafka.network":name="Fetch-Follower-ResponseSendTimeMs",type="RequestMetrics"'
             gauges:
-                Message_in_rate:  '"kafka.server":name="AllTopicsMessagesInPerSec",type="BrokerTopicMetrics"'
-                Byte_in_rate: '"kafka.server":name="AllTopicsBytesInPerSec",type="BrokerTopicMetrics"'
-                Request_rate.Produce: '"kafka.network":name="Produce-RequestsPerSec",type="RequestMetrics"'
-                Request_rate.Fetch-consumer: '"kafka.network":name="Fetch-Consumer-RequestsPerSec",type="RequestMetrics"'
-                Request_rate.Fetch-follower: '"kafka.network":name="Fetch-Follower-RequestsPerSec",type="RequestMetrics"'
-                Byte_out_rate: '"kafka.server":name="AllTopicsBytesOutPerSec",type="BrokerTopicMetrics"'
-                Leader_election_rate: '"kafka.controller":name="LeaderElectionRateAndTimeMs",type="ControllerStats"'
-
-    
+                Message_in_rate:  'kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec'

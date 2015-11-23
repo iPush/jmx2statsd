@@ -170,7 +170,7 @@ public class ServicePuller {
                                 Double.parseDouble(value.toString()),
                                 tags,
                                 System.currentTimeMillis()/1000,
-                                "GAUGE",
+                                type.toUpperCase(),
                                 Config.flushPeriod
                             );
                             monitor.monitor(openFalconData);
