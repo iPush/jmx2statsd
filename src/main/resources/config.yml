@@ -11,7 +11,7 @@ services:
         jmx_port: 9999
         thread_num: 1
         items:
-            gauges:
+            gauge:
                 Message_in_rate:  'kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec'
                 Byte_in_rate: 'kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec'
                 Byte_out_rate: 'kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec'
