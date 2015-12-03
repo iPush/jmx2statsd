@@ -166,7 +166,7 @@ public class ServicePuller {
                             String tags = String.format("host=%s,service=%s",host, service.getName());
                             OpenFalconData openFalconData = new OpenFalconData(
                                 host,
-                                metric,
+                                metric + "_" + attr.getName(),
                                 Double.parseDouble(value.toString()),
                                 tags,
                                 System.currentTimeMillis()/1000,
